@@ -1,8 +1,13 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const io = require('socket.io');
+const { ExpressPeerServer } = require('peer');
 
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const peerService = ExpressPeerServer(http, {
+    debug: true
+});
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -17,13 +22,17 @@ app.get('/:room', (req, res) => {
 })
 
 io.on('connection', socket => {
-    socket.on('join-room', () => {
-        console.log('joined room');
+    socket.on('join-room', (roomId, userId) => {
+        // console.log('joined room');
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('user-connected', userId);
     })
 })
 
+app.use('/peerjs', peerService);
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log(`server started on port ${PORT}`);
 })
