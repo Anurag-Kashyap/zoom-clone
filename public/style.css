@@ -85,3 +85,10 @@ video {
     padding: 22px 12px;
     display: flex;
 }
+
+.main__message_container input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    color: #f5f5f5;
+}

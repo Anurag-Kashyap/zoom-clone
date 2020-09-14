@@ -8,12 +8,13 @@ let peer = new Peer( undefined, {
     host: '/',
     port: 5000
 }); 
+let msg = document.querySelector('input');
 
 myVideo.muted = true;
 
 navigator.mediaDevices.getUserMedia({
     audio: true,
-    video: true
+    video: false
 }).then( stream => {
     myVideoStream = stream;
     addVideoStream(myVideo, myVideoStream);
@@ -50,3 +51,14 @@ const connectToNewUser = (userId, stream) => {
         addVideoStream(video, userVideoStream);
     })
 }
+
+document.querySelector('html').addEventListener('keyup', e => {
+    if (e.which == 13 && msg.value.length !== 0) {
+        socket.emit('message', msg.value);
+        msg.value = '';
+    }
+})
+
+socket.on('createMessage', msg => {
+    console.log('from server: ', msg);
+})
